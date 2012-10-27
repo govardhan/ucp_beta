@@ -19,11 +19,13 @@ class DBPool:
 
   #TODO connection object can be persisted instead of getting connection object every time
   #Handle exceptions
+  #Find more on query return execution return value vs l_query.affectedRows
   def execute_query(self, p_query, p_dbname):
     logging.debug("query {0} dbname {1}".format(p_query, p_dbname))
     l_connection = PySQLPool.getNewConnection(username=self.db_user_name, password=self.db_user_password, host=self.db_server, db=p_dbname)
     l_query = PySQLPool.getNewQuery(l_connection)
     l_retval = l_query.Query(p_query)
+    #print l_query.affectedRows
     return l_retval, l_query.record
   
 
