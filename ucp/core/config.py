@@ -13,7 +13,7 @@ class UVConfig:
   def init(self, p_filename):
     self.conf_filename = p_filename
     try:
-      assert len(self.conf_filename) != 0 and os.path.isfile(self.conf_filename) , "config file {0} is not valid".format(self.conf_filename)
+      assert (len(self.conf_filename) != 0 and os.path.isfile(self.conf_filename) ) , "config file {0} is not valid".format(self.conf_filename)
     except AssertionError:
       logging.exception("config file {0} is not valid".format(self.conf_filename))
       raise
@@ -32,8 +32,6 @@ class UVConfig:
 
     self.m_initialized = 1
 
-  #def get_config_value(self, p_key):
-  #  return get_config_value("core", p_key)
 
   def get_config_value(self, p_section_name, p_key):
     try:
@@ -42,22 +40,23 @@ class UVConfig:
       logging.exception("UVConfig class has not yet initialized with config file")
       raise
         
-
-      if self.parser.has_option(p_section_name, p_key):
-        return (p_section_name, p_key)
-      else:
-        logging.warn("Config section {0}, key {1} not found in config file {2}".format(p_section_name, p_key, self.conf_filename))      
-        return None
-
-
-#conf = UVConfig("/root/ucp/ucp/conf/ucp.conf")
-init_logging("voiceapp.log")
-conf = UVConfig()
-conf.init("/root/ucp/ucp/conf/")
+    if self.parser.has_option(p_section_name, p_key):
+      return self.parser.get(p_section_name, p_key)
+    else:
+      logging.warn("Config section {0}, key {1} not found in config file {2}".format(p_section_name, p_key, self.conf_filename))      
+      return None
 
 
-print conf.get_config_value("core","logfile_name")
-print conf.get_config_value("database","db_user_name")
-print conf.get_config_value("database","logfile_path")
-print conf.get_config_value("monitor", "logfile_path")
-
+if __name__ == "__main__":
+  #conf = UVConfig("/root/ucp/ucp/conf/ucp.conf")
+  init_logging("voiceapp.log")
+  conf = UVConfig()
+  conf.init("/root/ucp/ucp/conf/ucp.conf")
+  
+  
+  print "Start testing"
+  print conf.get_config_value("core","logfile_name")
+  print conf.get_config_value("database","db_user_name")
+  print conf.get_config_value("database","logfile_path")
+  print conf.get_config_value("monitor", "logfile_path")
+  
