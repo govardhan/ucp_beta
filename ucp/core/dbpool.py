@@ -7,12 +7,10 @@ from config import UVConfig
 @singleton
 class DBPool:
   def __init__(self):
-    conf = UVConfig()
-    conf.init("/root/ucp/ucp/conf/ucp.conf")
-    self.db_user_name = conf.get_config_value("database", "db_user_name")
-    self.db_user_password = conf.get_config_value("database", "db_user_password")
-    self.db_max_connections = conf.get_config_value("database", "db_max_connections")
-    self.db_server = conf.get_config_value("database", "db_server")
+    self.db_user_name = UVConfig().get_config_value("database", "db_user_name")
+    self.db_user_password = UVConfig().get_config_value("database", "db_user_password")
+    self.db_max_connections = UVConfig().get_config_value("database", "db_max_connections")
+    self.db_server = UVConfig().get_config_value("database", "db_server")
     logging.info("db_user_name {0} db_user_password {1} db_max_connections {2} db_server {3}".format(self.db_user_name, self.db_user_password, self.db_max_connections, self.db_server))
     self.db_user_password = base64.b64decode(self.db_user_password)
 
