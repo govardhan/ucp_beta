@@ -167,6 +167,24 @@ CREATE TABLE `tb_user_profile` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `tb_number_telco_map`
+--
+
+DROP TABLE IF EXISTS `tb_number_telco_map`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_number_telco_map` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `num_pattern` varchar(40) DEFAULT NULL,
+  `telco_id` varchar(20) NOT NULL,
+  `flags` varchar(40) DEFAULT NULL,
+  `remarks` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
 -- Table structure for table `tb_services`
 --
 
@@ -175,10 +193,10 @@ DROP TABLE IF EXISTS `tb_services`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tb_services` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `service_id` varchar(10) DEFAULT NULL,
-  `service_name` varchar(10) DEFAULT NULL,
-  `service_group` varchar(10) DEFAULT NULL,
-  `desc` varchar(40) DEFAULT NULL,
+  `service_id` varchar(40) DEFAULT NULL,
+  `service_name` varchar(40) DEFAULT NULL,
+  `service_group` varchar(40) DEFAULT NULL,
+  `remarks` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -192,10 +210,10 @@ DROP TABLE IF EXISTS `tb_service_profile`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tb_service_profile` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `service_id` varchar(10) NOT NULL DEFAULT '.*' COMMENT 'reg-ex',
-  `profile_key` varchar(10) DEFAULT NULL,
-  `profile_value` varchar(10) DEFAULT NULL,
-  `desc` varchar(40) DEFAULT NULL,
+  `service_id` varchar(40) NOT NULL DEFAULT '.*' COMMENT 'reg-ex',
+  `profile_key` varchar(40) DEFAULT NULL,
+  `profile_value` varchar(40) DEFAULT NULL,
+  `remarks` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -209,12 +227,12 @@ DROP TABLE IF EXISTS `tb_service_map`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tb_service_map` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `in_pattern` varchar(10) DEFAULT NULL,
-  `out_pattern` varchar(10) DEFAULT NULL,
+  `in_pattern` varchar(20) DEFAULT NULL,
+  `out_pattern` varchar(20) DEFAULT NULL,
   `telco_id` varchar(20) NOT NULL DEFAULT '.*',
   `channel` varchar(20) NOT NULL DEFAULT '.*',
-  `service_id` varchar(10) DEFAULT NULL,
-  `desc` varchar(40) DEFAULT NULL,
+  `service_id` varchar(40) DEFAULT NULL,
+  `remarks` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -228,9 +246,9 @@ DROP TABLE IF EXISTS `tb_service_charge`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tb_service_charge` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `service_id` int(10) DEFAULT NULL,
+  `service_id` varchar(40) DEFAULT NULL,
   `plan_id` int(10) DEFAULT NULL,
-  `channel` varchar(4) DEFAULT NULL COMMENT '1-IVR, 2-SMS, 3-OBD, 4-USSD, 5-WEB',
+  `channel` varchar(10) DEFAULT NULL COMMENT '1-IVR, 2-SMS, 3-OBD, 4-USSD, 5-WEB',
   `duration` int(10) DEFAULT 7,
   `price` int(10) DEFAULT NULL,
   `start_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -255,7 +273,7 @@ CREATE TABLE `tb_number_normalizer` (
   `out_pattern` varchar(40) NOT NULL,
   `telco_id` varchar(20) NOT NULL DEFAULT '.*',
   `channel` varchar(20) NOT NULL DEFAULT '.*',
-  `description` text,
+  `remarks` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -269,7 +287,7 @@ DROP TABLE IF EXISTS `tb_cdr`;
 /*!40101 SET character_set_client = utf8 */;
 
 CREATE TABLE `tb_cdr` (
-  `callid` varchar(40) default NULL,
+  `uuid` varchar(40) default NULL,
   `source` varchar(40) default NULL,
   `src_telco_id` varchar(20) NOT NULL DEFAULT '.*',
   `dialed_number` varchar(40) default NULL,
@@ -280,7 +298,7 @@ CREATE TABLE `tb_cdr` (
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
   `call_duration` varchar(40) default NULL,
   `call_complete_type` int(4) NOT NULL COMMENT 'user hangup - 1, call release - 2, abnormal completion - 3 ',
-  PRIMARY KEY (`callid`)
+  PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 
@@ -290,14 +308,14 @@ DROP TABLE IF EXISTS `tb_cdr_transaction`;
 
 CREATE TABLE `tb_cdr_transaction` (
   `id` varchar(40) default NULL,
-  `callid` varchar(40) default NULL,
+  `uuid` varchar(40) default NULL,
   `txn_type` varchar(40) NOT NULL COMMENT 'share, reply, mt-charge, subscription, renewal',
   `source` varchar(40) default NULL,
   `destination` varchar(40) default NULL,
   `start_time` timestamp NOT NULL default '0000-00-00 00:00:00',
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
   `txn_status` varchar(40) default NULL COMMENT 'success fail noresponse',
-  PRIMARY KEY (`id`, `callid`)
+  PRIMARY KEY (`id`, `uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 
