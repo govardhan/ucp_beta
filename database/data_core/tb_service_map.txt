@@ -1,0 +1,4 @@
+1	(\\*)(\\d{10})	\\2	91.*	.*	VSMS_POST	
+2	121	\\1	91.*	.*	VSMS_LISTEN	
+3	122	\\1	91.*	.*	VSMS_LISTEN_NEW	
+4	123	\\1	91.*	.*	VSMS_LISTEN_AGAIN	

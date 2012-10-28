@@ -1,3 +1,2 @@
-1	(\\d{10})	91\\1	91.*	.*	Indian operators 10 digit num prefix with country code
-2	121	5555	91.BH.*	.*	In airtel 121 service mapped to 5555
-3	139	5555	91.VF.*	.*	In airtel 139 service mapped to 5555
+1	(\\d{10})	91\\1	91.BH	.*	
+2	(\\d{10})	91\\1	.*	.*	
