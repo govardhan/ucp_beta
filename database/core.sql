@@ -115,54 +115,52 @@ DROP TABLE IF EXISTS `tb_user_profile`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tb_user_profile` (
-  `msisdn` varchar(45) NOT NULL DEFAULT '0',
-  `lang` varchar(40) DEFAULT NULL,
-  `operator_id` varchar(45) NOT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1-PreActive, 2-Active, 3-Disabled, 4-Deleted',
-  `user_type` tinyint(4) NOT NULL DEFAULT '2' COMMENT '1-celeb, 2-topuser 3-normaluser',
+  `msisdn` varchar(20) NOT NULL ,
+  `lang` varchar(20) NOT NULL,
+  `telco_id` varchar(20) NOT NULL,
+  `status` enum('pre-active','active', 'disabled', 'deleted') NOT NULL DEFAULT 'active',
+  `user_type` enum('celeb', 'user', 'promo_user', 'group', 'grp_modr') NOT NULL DEFAULT 'user',
   `created_ts` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `privacy` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1-public, 2-private 3-propublic',
-  `follower_count` int(11) DEFAULT '0',
-  `following_count` int(11) DEFAULT '0',
-  `lang_notify` varchar(40) DEFAULT NULL,
-  `new_inbox_size` int(10) NOT NULL DEFAULT '10',
-  `heard_inbox_size` int(10) NOT NULL DEFAULT '10',
-  `save_inbox_size` int(10) NOT NULL DEFAULT '10',
-  `def_inbox_ttl` int(10) DEFAULT NULL,
-  `def_save_ttl` int(10) DEFAULT NULL,
-  `notify_pref` tinyint(4) DEFAULT '1' COMMENT '1-SMS 2-OBD 3-EMAIL',
-  `username` varchar(100) NOT NULL,
-  `email` varchar(200) DEFAULT NULL,
-  `displayname` varchar(40) DEFAULT NULL,
-  `password` varchar(50) DEFAULT NULL,
+  `privacy` enum('public', 'private') NOT NULL DEFAULT 'public',
+  `follower_count` int NOT NULL DEFAULT 0,
+  `following_count` int NOT NULL DEFAULT 0,
+  `user_name` varchar(10) NOT NULL,
+  `blog_box_size` smallint NOT NULL DEFAULT 10,
+  `new_inbox_size` smallint NOT NULL DEFAULT 10,
+  `heard_inbox_size` smallint NOT NULL DEFAULT 10,
+  `save_inbox_size` smallint NOT NULL DEFAULT 10,
+  `fwd_inbox_size` smallint NOT NULL DEFAULT 10,
+  `blog_box_ttl` smallint NOT NULL DEFAULT 30,
+  `new_inbox_ttl` smallint NOT NULL DEFAULT 10,
+  `heard_inbox_ttl` smallint NOT NULL DEFAULT 10,
+  `save_inbox_ttl` smallint NOT NULL DEFAULT 30,
+  `fwd_inbox_ttl` smallint NOT NULL DEFAULT 10,
+  `notify_pref` enum('sms', 'obd', 'email') NOT NULL DEFAULT 'sms',
+  `email` varchar(40) DEFAULT NULL,
+  `display_name` varchar(10) DEFAULT NULL,
+  `password` varchar(10) DEFAULT NULL,
   `location` char(2) NOT NULL DEFAULT 'SG' COMMENT 'ISO2 country codes',
-  `channel` tinyint(4) NOT NULL COMMENT 'facebook-21, twitter-22, web-23, iphone-24, android-25',
-  `device_id` varchar(45) DEFAULT NULL COMMENT 'device id',
-  `user_desc` varchar(512) DEFAULT NULL,
+  `channel` enum('ivr', 'sms', 'cli', 'ussd', 'callback', 'facebook', 'twitter', 'web', 'ios', 'android', 'web') NOT NULL DEFAULT 'ivr',
+  `device_id` varchar(40) DEFAULT NULL COMMENT 'smart phone devide id',
+  `user_desc` varchar(160) DEFAULT NULL,
   `profile_url` varchar(120) DEFAULT NULL COMMENT 'profile url',
   `intro_audio_url` varchar(120) DEFAULT NULL COMMENT 'introduction audio url',
   `image_url` varchar(120) DEFAULT NULL COMMENT 'profile avatar image',
   `current_location` varchar(160) DEFAULT NULL,
-  `facebook_id` varchar(100) DEFAULT NULL COMMENT 'facebook account id',
-  `facebook_username` varchar(160) DEFAULT NULL,
-  `facebook_screenname` varchar(160) DEFAULT NULL,
-  `twitter_username` varchar(160) DEFAULT NULL,
+  `facebook_id` varchar(20) DEFAULT NULL COMMENT 'facebook account id',
+  `facebook_username` varchar(40) DEFAULT NULL,
+  `facebook_screenname` varchar(40) DEFAULT NULL,
+  `twitter_username` varchar(40) DEFAULT NULL,
   `facebook_token` varchar(260) DEFAULT NULL,
-  `twitter_id` int(11) DEFAULT '-1',
+  `twitter_id` int DEFAULT 1,
   `twitter_token` varchar(260) DEFAULT NULL,
   `twitter_token_secret` varchar(260) DEFAULT NULL,
-  `twitter_screenname` varchar(160) DEFAULT NULL,
-  `telco_follower_count` int(11) unsigned NOT NULL DEFAULT '0',
-  `notify_email_addr` varchar(100) DEFAULT NULL,
-  `notify_new_msg` tinyint(1) NOT NULL DEFAULT '1',
-  `fwd_to` varchar(20) DEFAULT NULL,
-  `fwd_email_addr` varchar(100) DEFAULT NULL,
-  `fwd_phone_no` varchar(20) DEFAULT NULL,
-  `block_list` text,
+  `twitter_screenname` varchar(40) DEFAULT NULL,
+  `block_list` text DEFAULT NULL,
   PRIMARY KEY (`msisdn`),
-  UNIQUE KEY `msi_loc` (`msisdn`,`location`),
-  UNIQUE KEY `up_uk_3` (`email`)
+  UNIQUE KEY `up_uname` (`user_name`),
+  FOREIGN KEY `up_telcoid_tp_telcoid` (telco_id) REFERENCES tb_telco_profile(telco_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -183,6 +181,30 @@ CREATE TABLE `tb_number_telco_map` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `tb_user_profile`
+--
+
+DROP TABLE IF EXISTS `tb_telco_profile`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_telco_profile` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `telco_id` varchar(40) NOT NULL COMMENT '91.OPNAME.SITE.ZONE',
+  `lang` varchar(40) NOT NULL DEFAULT '1=arabic,2=eng' COMMENT '1=arabic,2=eng,3=hindi',
+  `obd_cic_group` varchar(40) DEFAULT NULL COMMENT 'operator obd calls circuits id',
+  `mt_sms_type` varchar(40) NOT NULL DEFAULT 'smpp' COMMENT 'smpp, api',
+  `mo_sms_type` varchar(40) NOT NULL DEFAULT 'smpp' COMMENT 'smpp, api',
+  `num_resol_type` varchar(40) NOT NULL DEFAULT 'local' COMMENT 'local, api, local-api',
+  `port_in_out` bool NOT NULL DEFAULT False COMMENT 'true, false',
+  `event_bill_type` varchar(40) NOT NULL DEFAULT 'mt-smpp' COMMENT 'mt-smpp, mt-api, api, callback',
+  `subs_bill_type` varchar(40) NOT NULL DEFAULT 'mt-smpp' COMMENT 'mt-smpp, mt-api, api, callback',
+  `renew_bill_type` varchar(40) NOT NULL DEFAULT 'mt-smpp' COMMENT 'mt-smpp, mt-api, api, callback',
+  `unsub_bill_type` varchar(40) NOT NULL DEFAULT 'none' COMMENT 'none, api, callback',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tp_telcoid` (`telco_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `tb_services`

@@ -86,5 +86,7 @@ if __name__ == "__main__":
   l_telco_profile = UVTelcoProfile()
   l_found, l_result = l_telco_profile.get_lang("91.BH")
   l_found, l_result = l_telco_profile.get_lang("966.STC")
+  l_found, l_result = l_telco_profile.get_lang("966.STC",2)
+  l_found, l_result = l_telco_profile.get_lang("91.BH",3)
 
 

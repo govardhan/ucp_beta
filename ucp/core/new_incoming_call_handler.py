@@ -39,20 +39,18 @@ class NewIncomingCallHandler:
     l_src_telcoid_found, self.src_telcoId, l_src_flags = UVNumberTelcoResolution().get_telco_id(self.src_norm_num)
 
     #TODO have configurable value
-    self.channel = "IVR"
+    self.channel = "ivr"
     l_srvc_found, self.service_id, self.dst_srvc_num = UVServiceMap().get_service_id(self.dst_norm_num, self.src_telcoId, self.channel);
 
     l_dst_srvc_norm_status, self.dst_srvc_norm_num = UVNormalizer().normalize(self.dst_srvc_num)
     l_dst_telcoid_found, self.dst_telcoId, l_src_flags = UVNumberTelcoResolution().get_telco_id(self.dst_srvc_norm_num)
    
     #Fetch user profile if exists. Create if not exists
-
-    if( l_srvc_found == True):
-      #handover call to application 
-      pass
-    else:
-      #handover call to Undefined Service App
-      pass
+    l_found, l_profile = UVUserProfileHandler().get_profile(self.src_norm_num)
+    if(False == l_found):
+      UVUserProfileHandler().create_profile(self.src_norm_num, UVTelcoProfile().get_lang(self.src_telcoId), self.src_telcoId, elf.src_norm_num)
+      
+    UVAppManager().handleService(self.uuid, self.src_norm_num, self.dst_srvc_norm_num, self.src_telcoId, self.dst_telcoId, self.service_id);
 
 #Run unit tests
 if __name__ == "__main__":

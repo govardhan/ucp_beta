@@ -21,13 +21,19 @@ class DBPool:
   #Handle exceptions
   #Find more on query return execution return value vs l_query.affectedRows
   def execute_query(self, p_query, p_dbname):
-    logging.debug("query {0} dbname {1}".format(p_query, p_dbname))
-    l_connection = PySQLPool.getNewConnection(username=self.db_user_name, password=self.db_user_password, host=self.db_server, db=p_dbname)
-    l_query = PySQLPool.getNewQuery(l_connection)
-    l_retval = l_query.Query(p_query)
-    #print l_query.affectedRows
-    return l_retval, l_query.record
-  
+    try:
+      logging.debug("query {0} dbname {1}".format(p_query, p_dbname))
+      l_connection = PySQLPool.getNewConnection(username=self.db_user_name, password=self.db_user_password, host=self.db_server, db=p_dbname)
+      #TODO Second param True is autocommit flag. Explore more on this param behavior for batch inserts
+      l_query = PySQLPool.getNewQuery(l_connection, True)
+      l_retval = l_query.Query(p_query)
+      #print l_query.affectedRows
+      return l_retval, l_query.record
+    except:
+      logging.exception("query [{0}] failed to execute. p_dbname {1}".format(p_query, p_dbname))
+      raise
+      return None, None
+ 
 
 if __name__ == "__main__":
   #Run unit tests
